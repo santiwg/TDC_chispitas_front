@@ -1,0 +1,143 @@
+<app-header></app-header>
+<main class="pantalla">
+  <h1 class="titulo">Configuración</h1>
+  <p class="subtitulo">Definí la temperatura de referencia</p>
+
+  <!-- ============ Tarjeta 1: setpoint y tolerancia ============ -->
+  <section class="tarjeta">
+    <!-- Setpoint -->
+    <div class="fila">
+      <div>
+        <div class="etiqueta">Setpoint</div>
+        <div class="ayuda">Temperatura objetivo</div>
+      </div>
+
+      <div class="contador">
+        <!-- (click) llama al método del .ts; [disabled] bloquea el botón en el límite -->
+        <button
+          type="button"
+          class="btn-ajuste"
+          aria-label="Bajar setpoint"
+          [disabled]="setpointEnMinimo"
+          (click)="disminuirSetpoint()"
+        >
+          &minus;
+        </button>
+        <span class="valor">{{ formatear(setpoint()) }} °C</span>
+        <button
+          type="button"
+          class="btn-ajuste"
+          aria-label="Subir setpoint"
+          [disabled]="setpointEnMaximo"
+          (click)="aumentarSetpoint()"
+        >
+          +
+        </button>
+      </div>
+    </div>
+
+    <hr class="separador" />
+
+    <!-- Tolerancia -->
+    <div class="fila">
+      <div>
+        <div class="etiqueta">Tolerancia</div>
+        <div class="ayuda">Margen permitido ±</div>
+      </div>
+
+      <div class="contador">
+        <button
+          type="button"
+          class="btn-ajuste"
+          aria-label="Bajar tolerancia"
+          [disabled]="toleranciaEnMinimo"
+          (click)="disminuirTolerancia()"
+        >
+          &minus;
+        </button>
+        <span class="valor">±{{ formatear(tolerancia()) }} °C</span>
+        <button
+          type="button"
+          class="btn-ajuste"
+          aria-label="Subir tolerancia"
+          [disabled]="toleranciaEnMaximo"
+          (click)="aumentarTolerancia()"
+        >
+          +
+        </button>
+      </div>
+    </div>
+
+    <!-- Recuadro verde con el rango resultante (se calcula solo) -->
+    <div class="rango">
+      <span class="rango-etiqueta">Rango aceptable</span>
+      <span class="rango-valor">{{ textoRango() }}</span>
+    </div>
+  </section>
+
+  <!-- ============ Tarjeta 2: alertas ============ -->
+  <section class="tarjeta tarjeta-fila">
+    <div>
+      <div class="etiqueta">Alertas</div>
+      <div class="ayuda">Avisar cuando salga del rango</div>
+    </div>
+
+    <!-- Switch: es un botón con role="switch" para que sea accesible -->
+    <button
+      type="button"
+      class="switch"
+      role="switch"
+      aria-label="Activar alertas"
+      [class.encendido]="alertasActivas()"
+      [attr.aria-checked]="alertasActivas()"
+      (click)="alternarAlertas()"
+    >
+      <span class="switch-perilla"></span>
+    </button>
+  </section>
+
+  <!-- ============ Tarjeta 3: referencia de colores del LED ============ -->
+  <section class="tarjeta">
+    <h2 class="leds-titulo">Colores del LED RGB</h2>
+
+    <ul class="leds">
+      <li class="led">
+        <span class="punto punto-azul"></span>
+        <span class="led-nombre">Azul · Temperatura baja</span>
+        <span class="led-rango">{{ textoAzul() }}</span>
+      </li>
+      <li class="led">
+        <span class="punto punto-verde"></span>
+        <span class="led-nombre">Verde · Ideal</span>
+        <span class="led-rango">{{ textoRango() }}</span>
+      </li>
+      <li class="led">
+        <span class="punto punto-rojo"></span>
+        <span class="led-nombre">Rojo · Temperatura alta</span>
+        <span class="led-rango">{{ textoRojo() }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ Botón guardar ============ -->
+  <button
+    type="button"
+    class="btn-guardar"
+    [disabled]="guardando()"
+    (click)="guardar()"
+  >
+    {{ guardando() ? 'Enviando...' : 'Guardar y enviar al dispositivo' }}
+  </button>
+
+  <!-- Resultado del envío (solo aparece cuando hay mensaje) -->
+  @if (mensaje(); as msg) {
+    <p
+      class="mensaje"
+      [class.mensaje-exito]="msg.tipo === 'exito'"
+      [class.mensaje-error]="msg.tipo === 'error'"
+      role="status"
+    >
+      {{ msg.texto }}
+    </p>
+  }
+</main>
