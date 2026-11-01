@@ -1,0 +1,198 @@
+/* =====================================================================
+   inicio.component.css
+   Usa las variables de styles.css. Los colores que no existen ahí
+   (fondos/texto de azul y rojo) están definidos acá abajo, en .estado-*.
+   ===================================================================== */
+
+:host {
+  display: block;
+}
+
+.inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+
+  /* Valores por defecto mientras no hay estado cargado */
+  --estado-color: var(--color-primario);
+  --estado-texto: var(--color-primario);
+  --estado-fondo: var(--color-primario-suave);
+}
+
+/* Cada estado cambia las 3 variables y el resto del CSS se adapta solo */
+.estado-azul {
+  --estado-color: var(--color-azul);
+  --estado-texto: #1c4fa3;
+  --estado-fondo: #e7f0fd;
+}
+.estado-verde {
+  --estado-color: var(--color-verde);
+  --estado-texto: var(--color-verde-texto);
+  --estado-fondo: var(--color-verde-fondo);
+}
+.estado-rojo {
+  --estado-color: var(--color-rojo);
+  --estado-texto: var(--color-error-texto);
+  --estado-fondo: var(--color-error-fondo);
+}
+
+/* ---------- Saludo ---------- */
+.saludo h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.saludo p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Avisos ---------- */
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+}
+.aviso__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.4;
+  min-width: 0;
+}
+.aviso__texto strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.aviso--estado {
+  background: var(--estado-fondo);
+}
+.aviso--estado strong {
+  color: var(--estado-texto);
+}
+.aviso__icono {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--estado-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aviso--error {
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-error-fondo);
+  color: var(--color-error-texto);
+}
+.boton-reintentar {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--color-error-texto);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ---------- Tarjeta de temperatura ---------- */
+.tarjeta {
+  background: var(--color-superficie);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow:
+    0 1px 2px rgba(18, 41, 74, 0.06),
+    0 8px 24px rgba(18, 41, 74, 0.06);
+}
+.tarjeta--cargando {
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+.tarjeta__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tarjeta__cabecera h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--estado-fondo);
+  color: var(--estado-texto);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.temperatura {
+  display: flex;
+  align-items: flex-start;
+  margin: 8px 0 0;
+  color: var(--estado-texto);
+}
+.temperatura__valor {
+  font-size: 84px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.temperatura__unidad {
+  margin: 10px 0 0 4px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* ---------- Datos (LED y última medición) ---------- */
+.datos {
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-borde);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.datos__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.datos__fila dt {
+  color: var(--color-texto-suave);
+}
+.datos__fila dd {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.punto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--estado-color);
+  box-shadow: 0 0 0 4px var(--estado-fondo);
+}

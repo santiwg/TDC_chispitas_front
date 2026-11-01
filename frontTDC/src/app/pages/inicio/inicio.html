@@ -1,0 +1,62 @@
+<app-header></app-header>
+<main class="inicio" [class]="estado() ? 'estado-' + estado()!.clave : ''">
+  <header class="saludo">
+    <h1>¡Hola!</h1>
+    <p>Monitoreo de temperatura de medicamentos</p>
+  </header>
+
+  @if (error()) {
+    <div class="aviso aviso--error" role="alert">
+      <div class="aviso__texto">
+        <strong>Sin datos actualizados</strong>
+        <span>{{ error() }}</span>
+      </div>
+      <button type="button" class="boton-reintentar" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  @if (estado(); as e) {
+    <div class="aviso aviso--estado" role="status">
+      <span class="aviso__icono" aria-hidden="true">
+        @if (e.clave === 'verde') {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+        } @else {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3 20h18z" /><path d="M12 10v4" /><path d="M12 17.5h.01" /></svg>
+        }
+      </span>
+      <div class="aviso__texto">
+        <strong>{{ e.titulo }}</strong>
+        <span>{{ e.detalle }}</span>
+      </div>
+    </div>
+
+    <section class="tarjeta" aria-labelledby="titulo-temperatura">
+      <div class="tarjeta__cabecera">
+        <h2 id="titulo-temperatura">Temperatura actual</h2>
+        <span class="chip">{{ e.etiqueta }}</span>
+      </div>
+
+      <p class="temperatura" aria-live="polite">
+        <span class="temperatura__valor">{{ formatearTemperatura(e.temperatura) }}</span>
+        <span class="temperatura__unidad">°C</span>
+      </p>
+
+      <dl class="datos">
+        <div class="datos__fila">
+          <dt>LED RGB</dt>
+          <dd><span class="punto" aria-hidden="true"></span>{{ e.ledNombre }}</dd>
+        </div>
+        @if (e.fecha) {
+          <div class="datos__fila">
+            <dt>Actualizado</dt>
+            <dd>{{ e.fecha | date: "dd/MM/yyyy · HH:mm" }} hs</dd>
+          </div>
+        }
+      </dl>
+    </section>
+  } @else if (cargando()) {
+    <section class="tarjeta tarjeta--cargando" aria-busy="true">
+      <p>Obteniendo la temperatura…</p>
+    </section>
+  }
+</main>

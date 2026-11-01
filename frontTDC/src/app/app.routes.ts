@@ -23,13 +23,14 @@ export const routes: Routes = [
       ),
   },
 
-  /* PENDIENTE: estas dos pantallas todavía hay que crearlas.
-   Hasta que existan, comentá estas rutas para que compile.
+  
   {
     path: 'inicio',
     loadComponent: () =>
-      import('./pages/inicio/inicio.component').then((m) => m.InicioComponent),
+      import('./pages/inicio/inicio').then((m) => m.InicioComponent),
   },
+  /* PENDIENTE: estas dos pantallas todavía hay que crearlas.
+   Hasta que existan, comentá estas rutas para que compile.
   {
     path: 'historial',
     loadComponent: () =>

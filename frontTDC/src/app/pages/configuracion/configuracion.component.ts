@@ -19,6 +19,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 
 import { TermomedService } from '../../services/termomed.service';
 import { ConfigDTO } from '../../models/interfaces';
+import { HeaderComponent } from '../../components/header/header';
 
 // Forma del mensaje que se muestra debajo del botón (éxito o error)
 interface MensajeEstado {
@@ -31,6 +32,7 @@ interface MensajeEstado {
   standalone: true,
   templateUrl: './configuracion.component.html',
   styleUrl: './configuracion.component.css',
+  imports:[HeaderComponent]
 })
 export class ConfiguracionComponent {
   // inject() nos da la instancia única del service (providedIn: 'root')
