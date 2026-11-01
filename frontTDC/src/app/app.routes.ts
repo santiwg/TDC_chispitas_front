@@ -29,16 +29,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/inicio/inicio').then((m) => m.InicioComponent),
   },
-  /* PENDIENTE: estas dos pantallas todavía hay que crearlas.
-   Hasta que existan, comentá estas rutas para que compile.
+  
   {
     path: 'historial',
     loadComponent: () =>
-      import('./pages/historial/historial.component').then(
+      import('./pages/historial/historial').then(
         (m) => m.HistorialComponent,
       ),
   },
 
   // Cualquier URL que no exista vuelve a Inicio
-  { path: '**', redirectTo: 'inicio' },*/
+  { path: '**', redirectTo: 'inicio' },
 ];

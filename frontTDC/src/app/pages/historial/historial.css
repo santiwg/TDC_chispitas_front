@@ -1,0 +1,274 @@
+/* =====================================================================
+   historial.css
+   Usa las variables de styles.css. Los colores de azul y rojo "claros"
+   (fondo y texto) no existen ahí, así que se definen en .fila--*.
+   ===================================================================== */
+
+:host {
+  display: block;
+}
+
+.historial {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+}
+
+/* ---------- Título ---------- */
+.titulo h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.titulo p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Tarjeta ---------- */
+.tarjeta {
+  background: var(--color-superficie);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow:
+    0 1px 2px rgba(18, 41, 74, 0.06),
+    0 8px 24px rgba(18, 41, 74, 0.05);
+}
+.tarjeta--vacia {
+  list-style: none;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+.tarjeta--vacia p {
+  margin: 0;
+}
+
+/* ---------- Gráfico ---------- */
+.grafico__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+.grafico__cabecera h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.leyenda {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.leyenda__muestra {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  background: #cde9d6;
+}
+
+.grafico {
+  display: block;
+  width: 100%;
+  height: 110px;
+  margin-top: 10px;
+}
+.grafico__banda {
+  fill: #cde9d6;
+}
+.grafico__base {
+  stroke: var(--color-borde);
+  stroke-width: 1;
+}
+.grafico__linea {
+  fill: none;
+  stroke: var(--color-primario);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.grafico__ultimo {
+  fill: var(--color-superficie);
+  stroke-width: 3.5;
+}
+.grafico__ultimo--azul {
+  stroke: var(--color-azul);
+}
+.grafico__ultimo--verde {
+  stroke: var(--color-verde);
+}
+.grafico__ultimo--rojo {
+  stroke: var(--color-rojo);
+}
+.grafico__fechas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Mínima / promedio / máxima ---------- */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-borde);
+}
+.resumen dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+.resumen dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.resumen__min {
+  color: #1c4fa3;
+}
+.resumen__max {
+  color: var(--color-error-texto);
+}
+
+/* ---------- Filtros ---------- */
+.filtros {
+  display: flex;
+  gap: 8px;
+}
+.filtro {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--color-superficie);
+  color: var(--color-primario);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.filtro--activo {
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+/* ---------- Lista ---------- */
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--color-superficie);
+}
+.fila--azul {
+  --estado-color: var(--color-azul);
+  --estado-texto: #1c4fa3;
+  --estado-fondo: #e7f0fd;
+}
+.fila--verde {
+  --estado-color: var(--color-verde);
+  --estado-texto: var(--color-verde-texto);
+  --estado-fondo: var(--color-verde-fondo);
+}
+.fila--rojo {
+  --estado-color: var(--color-rojo);
+  --estado-texto: var(--color-error-texto);
+  --estado-fondo: var(--color-error-fondo);
+}
+.fila__punto {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--estado-color);
+}
+.fila__momento {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fila__momento strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+.fila__momento span {
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--color-texto-suave);
+}
+.fila__chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--estado-fondo);
+  color: var(--estado-texto);
+  font-size: 12px;
+  font-weight: 700;
+}
+.fila__temperatura {
+  min-width: 64px;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--estado-texto);
+}
+
+/* ---------- Error ---------- */
+.aviso-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--color-error-fondo);
+  color: var(--color-error-texto);
+}
+.aviso-error__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.4;
+  min-width: 0;
+}
+.aviso-error__texto strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+.boton-reintentar {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--color-error-texto);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}

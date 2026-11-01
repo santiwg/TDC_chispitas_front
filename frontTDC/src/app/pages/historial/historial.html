@@ -1,0 +1,97 @@
+<app-header></app-header>
+<main class="historial">
+  <header class="titulo">
+    <h1>Historial</h1>
+    @if (resumen(); as r) {
+      <p>{{ r.cantidad }} mediciones registradas</p>
+    } @else {
+      <p>Mediciones de temperatura</p>
+    }
+  </header>
+
+  @if (error()) {
+    <div class="aviso-error" role="alert">
+      <div class="aviso-error__texto">
+        <strong>No se pudo cargar el historial</strong>
+        <span>{{ error() }}</span>
+      </div>
+      <button type="button" class="boton-reintentar" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else if (cargando()) {
+    <section class="tarjeta tarjeta--vacia" aria-busy="true">
+      <p>Cargando mediciones…</p>
+    </section>
+  } @else if (resumen(); as r) {
+    <!-- ================= Gráfico y resumen ================= -->
+    <section class="tarjeta" aria-labelledby="titulo-grafico">
+      <div class="grafico__cabecera">
+        <h2 id="titulo-grafico">Evolución de la temperatura</h2>
+        <span class="leyenda"><span class="leyenda__muestra"></span>Rango ideal</span>
+      </div>
+
+      @if (grafico(); as g) {
+        <svg class="grafico" viewBox="0 0 300 110" role="img" aria-label="Gráfico de la temperatura en las últimas mediciones">
+          <rect x="0" width="300" class="grafico__banda" [attr.y]="g.bandaY" [attr.height]="g.bandaAlto" />
+          <line x1="0" y1="109" x2="300" y2="109" class="grafico__base" />
+          <polyline class="grafico__linea" [attr.points]="g.puntos" />
+          <circle r="6" [attr.cx]="g.ultimoX" [attr.cy]="g.ultimoY" [class]="'grafico__ultimo grafico__ultimo--' + g.ultimoClave" />
+        </svg>
+        <div class="grafico__fechas">
+          <span>{{ g.desde | date: 'dd/MM · HH:mm' }}</span>
+          <span>{{ g.hasta | date: 'dd/MM · HH:mm' }}</span>
+        </div>
+      }
+
+      <dl class="resumen">
+        <div>
+          <dt>Mínima</dt>
+          <dd class="resumen__min">{{ formatear(r.min) }} °C</dd>
+        </div>
+        <div>
+          <dt>Promedio</dt>
+          <dd>{{ formatear(r.promedio) }} °C</dd>
+        </div>
+        <div>
+          <dt>Máxima</dt>
+          <dd class="resumen__max">{{ formatear(r.max) }} °C</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- ================= Filtros ================= -->
+    <div class="filtros" role="group" aria-label="Filtrar por estado">
+      @for (op of opcionesFiltro; track op.valor) {
+        <button
+          type="button"
+          class="filtro"
+          [class.filtro--activo]="filtro() === op.valor"
+          [attr.aria-pressed]="filtro() === op.valor"
+          (click)="elegirFiltro(op.valor)"
+        >
+          {{ op.texto }}
+        </button>
+      }
+    </div>
+
+    <!-- ================= Lista ================= -->
+    <ul class="lista">
+      @for (f of filas(); track f.fecha.getTime()) {
+        <li class="fila" [class]="'fila fila--' + f.clave">
+          <span class="fila__punto" aria-hidden="true"></span>
+          <div class="fila__momento">
+            <strong>{{ f.fecha | date: 'HH:mm' }} hs</strong>
+            <span>{{ f.fecha | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <span class="fila__chip">{{ f.etiqueta }}</span>
+          <span class="fila__temperatura">{{ formatear(f.temperatura) }} °C</span>
+        </li>
+      } @empty {
+        <li class="tarjeta tarjeta--vacia">No hay mediciones con este estado.</li>
+      }
+    </ul>
+  } @else {
+    <section class="tarjeta tarjeta--vacia">
+      <p>Todavía no hay mediciones registradas.</p>
+    </section>
+  }
+</main>
