@@ -2,9 +2,10 @@
 // historial.component.ts
 // Ubicación sugerida: src/app/pages/historial/historial.component.ts
 //
-// Pantalla de Historial de Mediciones: gráfico de evolución, mínima /
-// promedio / máxima, filtros por estado y lista de mediciones.
-// Datos: GET /historial (TermomedService.obtenerHistorial).
+// Pantalla de Historial de Mediciones: filtro por fechas, gráfico de
+// evolución, mínima / promedio / máxima, filtros por estado y lista.
+// Datos: GET /historial (TermomedService.obtenerHistorial), que recibe
+// el rango fechaDesde / fechaHasta cada vez que el usuario lo cambia.
 //
 // IMPORTANTE: la API no manda el estado (azul/verde/rojo) de cada
 // medición, solo el color ACTUAL. Por eso cada punto se clasifica acá
@@ -24,7 +25,7 @@ import { DatePipe } from '@angular/common';
 import { TermomedService } from '../../services/termomed.service';
 
 import { HistorialCompletoDTO } from '../../models/interfaces';
-import { mockHistorial, USAR_MOCK } from '../inicio/termomed.mock';
+import { USAR_MOCK, mockHistorial } from '../inicio/termomed.mock';
 import { HeaderComponent } from '../../components/header/header';
 
 type ClaveEstado = 'azul' | 'verde' | 'rojo';
@@ -66,6 +67,18 @@ export class HistorialComponent implements OnInit {
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
   readonly filtro = signal<Filtro>('todas');
+
+  /** Fechas elegidas, en el formato de <input type="date">: "2026-11-01" o "" si no hay. */
+  readonly desde = signal('');
+  readonly hasta = signal('');
+
+  readonly hayRango = computed(() => !!this.desde() || !!this.hasta());
+  readonly rangoInvalido = computed(
+    () => !!this.desde() && !!this.hasta() && this.desde() > this.hasta(),
+  );
+
+  /** Se incrementa en cada pedido, para ignorar respuestas viejas si el usuario cambia rápido. */
+  private turno = 0;
 
   readonly opcionesFiltro: { valor: Filtro; texto: string }[] = [
     { valor: 'todas', texto: 'Todas' },
@@ -141,17 +154,54 @@ export class HistorialComponent implements OnInit {
   }
 
   async cargar(): Promise<void> {
+    if (this.rangoInvalido()) return; // el aviso ya se muestra en pantalla
+
+    const turno = ++this.turno;
     this.cargando.set(true);
     try {
-      const dto = USAR_MOCK ? await mockHistorial() : await this.termomed.obtenerHistorial();
+      // "Desde" arranca a las 00:00 y "Hasta" llega hasta las 23:59 de ese día
+      const desde = this.aFecha(this.desde(), false);
+      const hasta = this.aFecha(this.hasta(), true);
+
+      const dto = USAR_MOCK
+        ? await mockHistorial(desde, hasta)
+        : await this.termomed.obtenerHistorial(desde, hasta);
+
+      if (turno !== this.turno) return; // llegó una respuesta vieja: se descarta
       this.datos.set(dto);
       this.error.set(null);
     } catch (e) {
+      if (turno !== this.turno) return;
       // El service ya devuelve un mensaje legible
       this.error.set((e as Error).message);
     } finally {
-      this.cargando.set(false);
+      if (turno === this.turno) this.cargando.set(false);
     }
+  }
+
+  cambiarDesde(valor: string): void {
+    this.desde.set(valor);
+    this.cargar();
+  }
+
+  cambiarHasta(valor: string): void {
+    this.hasta.set(valor);
+    this.cargar();
+  }
+
+  limpiarFechas(): void {
+    this.desde.set('');
+    this.hasta.set('');
+    this.cargar();
+  }
+
+  /** "2026-11-01" -> Date en hora local (inicio o fin del día). "" -> null. */
+  private aFecha(valor: string, finDelDia: boolean): Date | null {
+    if (!valor) return null;
+    const [anio, mes, dia] = valor.split('-').map(Number);
+    return finDelDia
+      ? new Date(anio, mes - 1, dia, 23, 59, 59, 999)
+      : new Date(anio, mes - 1, dia, 0, 0, 0, 0);
   }
 
   elegirFiltro(valor: Filtro): void {

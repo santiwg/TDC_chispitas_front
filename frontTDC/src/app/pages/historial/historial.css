@@ -143,6 +143,75 @@
   color: var(--color-error-texto);
 }
 
+/* ---------- Filtro por fechas ---------- */
+.fechas__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.fechas__cabecera h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+.fechas__limpiar {
+  min-height: 44px;
+  margin: -10px -8px -10px 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-primario);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fechas__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.campo span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+.campo input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+.campo input:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 1px;
+}
+.fechas__error {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--color-error-fondo);
+  color: var(--color-error-texto);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* ---------- Filtros ---------- */
 .filtros {
   display: flex;

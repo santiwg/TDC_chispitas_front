@@ -27,21 +27,39 @@ export async function mockEstadoActual(): Promise<CurrentStateDTO> {
   };
 }
 
-/** Simula GET /historial: una medición por hora, de la más reciente a la más antigua. */
-export async function mockHistorial(): Promise<HistorialCompletoDTO> {
+/**
+ * Simula GET /historial: una medición por hora durante los últimos 10 días,
+ * de la más reciente a la más antigua. Respeta el rango de fechas como lo
+ * haría el backend.
+ */
+export async function mockHistorial(
+  fechaDesde?: Date | null,
+  fechaHasta?: Date | null,
+): Promise<HistorialCompletoDTO> {
   await new Promise((r) => setTimeout(r, 600));
 
-  const temperaturas = [13, 15.5, 19, 23.5, 24.5, 25, 25.5, 26.5, 28, 25];
+  const UNA_HORA = 60 * 60 * 1000;
   const ahora = Date.now();
 
+  // 240 mediciones (10 días). La temperatura oscila entre ~20 y ~30 °C.
+  const todas = Array.from({ length: 240 }, (_, i) => ({
+    temperatura: Math.round((25 + 4 * Math.sin(i / 6) + 1.5 * Math.cos(i / 2.3)) * 2) / 2,
+    fechaHora: new Date(ahora - i * UNA_HORA).toISOString(),
+  }));
+
+  const historial = todas.filter((p) => {
+    const t = new Date(p.fechaHora).getTime();
+    if (fechaDesde && t < fechaDesde.getTime()) return false;
+    if (fechaHasta && t > fechaHasta.getTime()) return false;
+    return true;
+  });
+
+  const actual = todas[0];
   return {
-    historial: temperaturas.map((temperatura, i) => ({
-      temperatura,
-      fechaHora: new Date(ahora - i * 60 * 60 * 1000).toISOString(),
-    })),
-    temperaturaActual: temperaturas[0],
-    colorActual: 'azul',
-    fechaDesde: null,
-    fechaHasta: null,
+    historial,
+    temperaturaActual: actual.temperatura,
+    colorActual: actual.temperatura < 24 ? 'azul' : actual.temperatura > 26 ? 'rojo' : 'verde',
+    fechaDesde: fechaDesde ? fechaDesde.toISOString() : null,
+    fechaHasta: fechaHasta ? fechaHasta.toISOString() : null,
   };
 }

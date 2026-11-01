@@ -3,11 +3,46 @@
   <header class="titulo">
     <h1>Historial</h1>
     @if (resumen(); as r) {
-      <p>{{ r.cantidad }} mediciones registradas</p>
+      <p>{{ r.cantidad }} mediciones {{ hayRango() ? 'en el período elegido' : 'registradas' }}</p>
     } @else {
       <p>Mediciones de temperatura</p>
     }
   </header>
+
+  <!-- ================= Filtro por fechas (siempre visible) ================= -->
+  <section class="tarjeta" aria-labelledby="titulo-fechas">
+    <div class="fechas__cabecera">
+      <h2 id="titulo-fechas">Filtrar por fecha</h2>
+      @if (hayRango()) {
+        <button type="button" class="fechas__limpiar" (click)="limpiarFechas()">Limpiar</button>
+      }
+    </div>
+
+    <div class="fechas__campos">
+      <label class="campo">
+        <span>Desde</span>
+        <input
+          type="date"
+          [value]="desde()"
+          [max]="hasta() || null"
+          (change)="cambiarDesde($any($event.target).value)"
+        />
+      </label>
+      <label class="campo">
+        <span>Hasta</span>
+        <input
+          type="date"
+          [value]="hasta()"
+          [min]="desde() || null"
+          (change)="cambiarHasta($any($event.target).value)"
+        />
+      </label>
+    </div>
+
+    @if (rangoInvalido()) {
+      <p class="fechas__error" role="alert">La fecha "Desde" no puede ser posterior a "Hasta".</p>
+    }
+  </section>
 
   @if (error()) {
     <div class="aviso-error" role="alert">
@@ -30,7 +65,7 @@
       </div>
 
       @if (grafico(); as g) {
-        <svg class="grafico" viewBox="0 0 300 110" role="img" aria-label="Gráfico de la temperatura en las últimas mediciones">
+        <svg class="grafico" viewBox="0 0 300 110" role="img" aria-label="Gráfico de la temperatura en las mediciones del período">
           <rect x="0" width="300" class="grafico__banda" [attr.y]="g.bandaY" [attr.height]="g.bandaAlto" />
           <line x1="0" y1="109" x2="300" y2="109" class="grafico__base" />
           <polyline class="grafico__linea" [attr.points]="g.puntos" />
@@ -58,7 +93,7 @@
       </dl>
     </section>
 
-    <!-- ================= Filtros ================= -->
+    <!-- ================= Filtros por estado ================= -->
     <div class="filtros" role="group" aria-label="Filtrar por estado">
       @for (op of opcionesFiltro; track op.valor) {
         <button
@@ -91,7 +126,9 @@
     </ul>
   } @else {
     <section class="tarjeta tarjeta--vacia">
-      <p>Todavía no hay mediciones registradas.</p>
+      <p>
+        {{ hayRango() ? 'No hay mediciones en el período elegido.' : 'Todavía no hay mediciones registradas.' }}
+      </p>
     </section>
   }
 </main>
