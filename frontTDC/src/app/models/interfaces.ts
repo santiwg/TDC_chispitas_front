@@ -24,6 +24,8 @@ export interface ConfigDTO {
 export interface CurrentStateDTO {
   temperature: number;
   color: string; // por ejemplo 'azul' | 'verde' | 'rojo'
+  velocityRmp:number; // velocidad del ventilador en RPM
+  velocityPercent:number; // velocidad del ventilador en porcentaje
 }
 
 /**
