@@ -8,7 +8,6 @@
 //
 // Requiere Angular 17+ (standalone, signals y control flow @if/@for).
 //
-// CurrentStateDTO: { temperature: number; color: string }.
 // Como la API no manda la fecha de la medición, la pantalla muestra la
 // hora en que se consultó por última vez ("Actualizado").
 // Si más adelante el DTO suma un campo de fecha, se usa en `armarVista`.
@@ -33,6 +32,10 @@ type ClaveEstado = 'azul' | 'verde' | 'rojo';
 interface EstadoVista {
   clave: ClaveEstado;
   temperatura: number;
+  setpoint?: number;
+  tolerancia?: number;
+  velocidadRpm: number | undefined;
+  velocidadPorcentaje: number | undefined;
   fecha: Date | null;
   etiqueta: string; // chip: "Temperatura baja"
   titulo: string; // título del aviso
@@ -40,7 +43,10 @@ interface EstadoVista {
   ledNombre: string; // "Azul" / "Verde" / "Rojo"
 }
 
-const TEXTOS: Record<ClaveEstado, Omit<EstadoVista, 'clave' | 'temperatura' | 'fecha'>> = {
+const TEXTOS: Record<
+  ClaveEstado,
+  Pick<EstadoVista, 'etiqueta' | 'titulo' | 'detalle' | 'ledNombre'>
+> = {
   azul: {
     etiqueta: 'Temperatura baja',
     titulo: 'Temperatura por debajo del rango',
@@ -75,6 +81,10 @@ function armarVista(dto: CurrentStateDTO): EstadoVista {
   return {
     clave,
     temperatura: dto.temperature,
+    setpoint: dto.setpoint,
+    tolerancia: dto.tolerance,
+    velocidadRpm: dto.velocityRmp,
+    velocidadPorcentaje: dto.velocityPercent,
     fecha: new Date(), // momento de la consulta (el DTO no trae fecha)
     ...TEXTOS[clave],
   };

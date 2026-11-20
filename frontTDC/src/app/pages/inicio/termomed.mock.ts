@@ -24,6 +24,10 @@ export async function mockEstadoActual(): Promise<CurrentStateDTO> {
   return {
     temperature: TEMPERATURA_POR_ESTADO[ESTADO_MOCK],
     color: ESTADO_MOCK,
+    velocityRmp: 1800,
+    velocityPercent: 60,
+    setpoint: 25,
+    tolerance: 1,
   };
 }
 

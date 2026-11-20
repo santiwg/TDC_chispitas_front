@@ -13,6 +13,7 @@
   flex-direction: column;
   gap: 14px;
   padding: 20px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
 
   /* Valores por defecto mientras no hay estado cargado */
   --estado-color: var(--color-primario);
@@ -190,9 +191,69 @@
   font-weight: 700;
 }
 .punto {
+  flex: none;
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background: var(--estado-color);
   box-shadow: 0 0 0 4px var(--estado-fondo);
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.resumen__item {
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--color-superficie);
+}
+
+.resumen dt,
+.velocidad dt {
+  color: var(--color-texto-suave);
+  font-size: 12px;
+}
+
+.resumen dd {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 5px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.tarjeta--velocidad {
+  padding: 14px 16px;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(18, 41, 74, 0.06);
+}
+
+.velocidad {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 10px 0 0;
+}
+
+.velocidad > div + div {
+  padding-left: 12px;
+  border-left: 1px solid var(--color-borde);
+}
+
+.velocidad dd {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.velocidad dd span {
+  color: var(--color-texto-suave);
+  font-size: 13px;
+  font-weight: 700;
 }

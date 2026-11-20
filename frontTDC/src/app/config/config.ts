@@ -23,7 +23,7 @@ const URL_POR_DEFECTO = 'http://localhost:3000';//SACAR ESTO
 const limpiarUrl = (url: string): string => url.replace(/\/+$/, '');
 
 // Si falta la variable avisamos por consola para detectarlo rápido
-if (!env.NG_APP_API_URL) {
+if (!env?.NG_APP_API_URL) {
   console.warn(
     `[config] Falta NG_APP_API_URL en el .env, se usa ${URL_POR_DEFECTO}`,
   );
@@ -32,7 +32,7 @@ if (!env.NG_APP_API_URL) {
 export const config = {
   urls: {
     // URL base de la API del termómetro (POST /config, GET /currentState, GET /historial)
-    api: limpiarUrl(env.NG_APP_API_URL ?? URL_POR_DEFECTO),
+    api: limpiarUrl(env?.NG_APP_API_URL ?? URL_POR_DEFECTO),
 
     // La usa el interceptor de refresh-token del axiosClient.
     // Si no hay login ni usuarios en este proyecto, se puede borrar

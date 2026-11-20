@@ -26,6 +26,8 @@ export interface CurrentStateDTO {
   color: string; // por ejemplo 'azul' | 'verde' | 'rojo'
   velocityRmp:number; // velocidad del ventilador en RPM
   velocityPercent:number; // velocidad del ventilador en porcentaje
+  setpoint?: number;
+  tolerance?: number;
 }
 
 /**
