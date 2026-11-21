@@ -42,6 +42,10 @@
       </p>
 
       <dl class="datos">
+        <div class="datos__fila">
+          <dt>LED RGB</dt>
+          <dd><span class="punto" aria-hidden="true"></span>{{ e.ledNombre }}</dd>
+        </div>
         @if (e.fecha) {
           <div class="datos__fila">
             <dt>Actualizado</dt>
@@ -50,21 +54,6 @@
         }
       </dl>
     </section>
-
-    <dl class="resumen">
-      <div class="resumen__item">
-        <dt>Setpoint</dt>
-        <dd>{{ e.setpoint != null ? formatearTemperatura(e.setpoint) + ' °C' : 'Sin dato' }}</dd>
-      </div>
-      <div class="resumen__item">
-        <dt>Tolerancia</dt>
-        <dd>{{ e.tolerancia != null ? '±' + formatearTemperatura(e.tolerancia) + ' °C' : 'Sin dato' }}</dd>
-      </div>
-      <div class="resumen__item">
-        <dt>LED RGB</dt>
-        <dd><span class="punto" aria-hidden="true"></span>{{ e.ledNombre }}</dd>
-      </div>
-    </dl>
 
     <section class="tarjeta tarjeta--velocidad" aria-labelledby="titulo-velocidad">
       <div class="tarjeta__cabecera">

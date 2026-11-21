@@ -199,32 +199,9 @@
   box-shadow: 0 0 0 4px var(--estado-fondo);
 }
 
-.resumen {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-}
-
-.resumen__item {
-  padding: 12px;
-  border-radius: 16px;
-  background: var(--color-superficie);
-}
-
-.resumen dt,
 .velocidad dt {
   color: var(--color-texto-suave);
   font-size: 12px;
-}
-
-.resumen dd {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 5px 0 0;
-  font-size: 16px;
-  font-weight: 800;
 }
 
 .tarjeta--velocidad {

@@ -16,11 +16,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   computed,
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { config } from '../../config/config';
 
 import { TermomedService } from '../../services/termomed.service';
 
@@ -61,7 +63,9 @@ interface Fila {
   styleUrl: './historial.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistorialComponent implements OnInit {
+export class HistorialComponent implements OnInit, OnDestroy {
+  private temporizador?: ReturnType<typeof setInterval>;
+  private consultaEnCurso = false;
   // ---------- Estado ----------
   readonly datos = signal<HistorialCompletoDTO | null>(null);
   readonly cargando = signal(true);
@@ -150,14 +154,27 @@ export class HistorialComponent implements OnInit {
   constructor(private readonly termomed: TermomedService) {}
 
   ngOnInit(): void {
+    // Al entrar, cargamos el historial con las fechas seleccionadas. Luego se actualiza cada 12 segundos.
     this.cargar();
+    this.temporizador = setInterval(() => {
+      // Si el pedido anterior terminó, cargar(true) refresca los datos en segundo plano
+      // para que el gráfico y la lista sigan visibles mientras llega la respuesta.
+      if (!this.consultaEnCurso) this.cargar(true);
+    }, config.intervaloActualizacionMs);
   }
 
-  async cargar(): Promise<void> {
+  ngOnDestroy(): void {
+    // Al salir, detenemos el temporizador. Cambiar el turno descarta cualquier respuesta pendiente.
+    clearInterval(this.temporizador);
+    this.turno++;
+  }
+
+  async cargar(enSegundoPlano = false): Promise<void> {
     if (this.rangoInvalido()) return; // el aviso ya se muestra en pantalla
 
     const turno = ++this.turno;
-    this.cargando.set(true);
+    this.consultaEnCurso = true;
+    if (!enSegundoPlano) this.cargando.set(true);
     try {
       // "Desde" arranca a las 00:00 y "Hasta" llega hasta las 23:59 de ese día
       const desde = this.aFecha(this.desde(), false);
@@ -175,7 +192,10 @@ export class HistorialComponent implements OnInit {
       // El service ya devuelve un mensaje legible
       this.error.set((e as Error).message);
     } finally {
-      if (turno === this.turno) this.cargando.set(false);
+      if (turno === this.turno) {
+        this.consultaEnCurso = false;
+        this.cargando.set(false);
+      }
     }
   }
 

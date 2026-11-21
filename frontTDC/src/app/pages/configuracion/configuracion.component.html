@@ -76,24 +76,25 @@
   </section>
 
   <!-- ============ Tarjeta 2: alertas ============ -->
-  <section class="tarjeta tarjeta-fila">
-    <div>
-      <div class="etiqueta">Alertas</div>
-      <div class="ayuda">Avisar cuando salga del rango</div>
-    </div>
+  <section class="tarjeta">
+    <div class="tarjeta-fila">
+      <div>
+        <div class="etiqueta">Alertas</div>
+        <div class="ayuda">Avisar cuando salga del rango</div>
+      </div>
 
-    <!-- Switch: es un botón con role="switch" para que sea accesible -->
-    <button
-      type="button"
-      class="switch"
-      role="switch"
-      aria-label="Activar alertas"
-      [class.encendido]="alertasActivas()"
-      [attr.aria-checked]="alertasActivas()"
-      (click)="alternarAlertas()"
-    >
-      <span class="switch-perilla"></span>
-    </button>
+      <button
+        type="button"
+        class="switch"
+        role="switch"
+        aria-label="Activar alertas"
+        [class.encendido]="alertasActivas()"
+        [attr.aria-checked]="alertasActivas()"
+        (click)="alternarAlertas()"
+      >
+        <span class="switch-perilla"></span>
+      </button>
+    </div>
   </section>
 
   <!-- ============ Tarjeta 3: referencia de colores del LED ============ -->

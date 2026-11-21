@@ -11,7 +11,7 @@ import { CurrentStateDTO, HistorialCompletoDTO } from "../../models/interfaces";
 
 
 /** Interruptor general: true = datos falsos, false = API real. */
-export const USAR_MOCK = true;
+export const USAR_MOCK = false;
 
 /** Cambiá este valor para ver cada estado de la pantalla de Inicio. */
 const ESTADO_MOCK: 'azul' | 'verde' | 'rojo' = 'azul';
@@ -26,8 +26,6 @@ export async function mockEstadoActual(): Promise<CurrentStateDTO> {
     color: ESTADO_MOCK,
     velocityRmp: 1800,
     velocityPercent: 60,
-    setpoint: 25,
-    tolerance: 1,
   };
 }
 

@@ -136,8 +136,9 @@ export class ConfiguracionComponent {
     // Si ya hay un envío en curso, ignoramos clicks repetidos
     if (this.guardando()) return;
 
-    this.guardando.set(true);
     this.mensaje.set(null); // limpiamos el mensaje anterior
+
+    this.guardando.set(true);
 
     try {
       // Armamos el DTO con los valores actuales de los signals
