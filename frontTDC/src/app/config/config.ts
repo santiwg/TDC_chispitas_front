@@ -33,7 +33,7 @@ export const config = {
   // Inicio e Historial comparten este intervalo, expresado en milisegundos.
   intervaloActualizacionMs: 12_000,
   urls: {
-    // URL base de la API del termómetro (POST /config, GET /currentState, GET /historial)
+    // URL base de la API del termómetro.
     api: limpiarUrl(env?.NG_APP_API_URL ?? URL_POR_DEFECTO),
 
     // La usa el interceptor de refresh-token del axiosClient.

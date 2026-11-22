@@ -3,14 +3,9 @@
 // Ubicación sugerida: src/app/pages/historial/historial.component.ts
 //
 // Pantalla de Historial de Mediciones: filtro por fechas, gráfico de
-// evolución, mínima / promedio / máxima, filtros por estado y lista.
+// evolución, mínima / promedio / máxima y lista de mediciones.
 // Datos: GET /historial (TermomedService.obtenerHistorial), que recibe
 // el rango fechaDesde / fechaHasta cada vez que el usuario lo cambia.
-//
-// IMPORTANTE: la API no manda el estado (azul/verde/rojo) de cada
-// medición, solo el color ACTUAL. Por eso cada punto se clasifica acá
-// con RANGO_IDEAL. Es un valor fijo temporal: lo correcto es que el
-// backend devuelva el color de cada punto (o el setpoint y la tolerancia).
 // =====================================================================
 
 import {
@@ -30,29 +25,9 @@ import { HistorialCompletoDTO } from '../../models/interfaces';
 import { USAR_MOCK, mockHistorial } from '../inicio/termomed.mock';
 import { HeaderComponent } from '../../components/header/header';
 
-type ClaveEstado = 'azul' | 'verde' | 'rojo';
-type Filtro = 'todas' | ClaveEstado;
-
-/** Rango considerado ideal (ej. setpoint 25 °C con tolerancia ±1 °C). */
-const RANGO_IDEAL = { min: 24, max: 26 };
-
-const ETIQUETAS: Record<ClaveEstado, string> = {
-  azul: 'Baja',
-  verde: 'Ideal',
-  rojo: 'Alta',
-};
-
-function clasificar(temperatura: number): ClaveEstado {
-  if (temperatura < RANGO_IDEAL.min) return 'azul';
-  if (temperatura > RANGO_IDEAL.max) return 'rojo';
-  return 'verde';
-}
-
 interface Fila {
   fecha: Date;
   temperatura: number;
-  clave: ClaveEstado;
-  etiqueta: string;
 }
 
 @Component({
@@ -70,7 +45,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
   readonly datos = signal<HistorialCompletoDTO | null>(null);
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
-  readonly filtro = signal<Filtro>('todas');
 
   /** Fechas elegidas, en el formato de <input type="date">: "2026-11-01" o "" si no hay. */
   readonly desde = signal('');
@@ -84,40 +58,19 @@ export class HistorialComponent implements OnInit, OnDestroy {
   /** Se incrementa en cada pedido, para ignorar respuestas viejas si el usuario cambia rápido. */
   private turno = 0;
 
-  readonly opcionesFiltro: { valor: Filtro; texto: string }[] = [
-    { valor: 'todas', texto: 'Todas' },
-    { valor: 'azul', texto: 'Bajas' },
-    { valor: 'verde', texto: 'Ideales' },
-    { valor: 'rojo', texto: 'Altas' },
-  ];
-
   // ---------- Datos derivados ----------
 
   /** Todas las mediciones, de la más reciente a la más antigua. */
-  private readonly todas = computed<Fila[]>(() => {
+  readonly filas = computed<Fila[]>(() => {
     const d = this.datos();
     if (!d) return [];
     return d.historial
-      .map((p) => {
-        const clave = clasificar(p.temperatura);
-        return {
-          fecha: new Date(p.fechaHora),
-          temperatura: p.temperatura,
-          clave,
-          etiqueta: ETIQUETAS[clave],
-        };
-      })
+      .map((p) => ({ fecha: new Date(p.fechaHora), temperatura: p.temperatura }))
       .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
   });
 
-  /** Las mediciones que se muestran en la lista, según el filtro. */
-  readonly filas = computed<Fila[]>(() => {
-    const f = this.filtro();
-    return f === 'todas' ? this.todas() : this.todas().filter((x) => x.clave === f);
-  });
-
   readonly resumen = computed(() => {
-    const temps = this.todas().map((x) => x.temperatura);
+    const temps = this.filas().map((x) => x.temperatura);
     if (!temps.length) return null;
     return {
       min: Math.min(...temps),
@@ -129,23 +82,20 @@ export class HistorialComponent implements OnInit, OnDestroy {
 
   /** Datos ya calculados para dibujar el SVG (viewBox 300 x 110). */
   readonly grafico = computed(() => {
-    const cronologico = [...this.todas()].reverse(); // de la más antigua a la más reciente
-    if (cronologico.length < 2) return null;
+    const resumen = this.resumen();
+    if (!resumen || resumen.cantidad < 2) return null;
 
-    const temps = cronologico.map((x) => x.temperatura);
-    const yMin = Math.min(...temps, RANGO_IDEAL.min) - 2;
-    const yMax = Math.max(...temps, RANGO_IDEAL.max) + 2;
+    const cronologico = [...this.filas()].reverse(); // de la más antigua a la más reciente
+    const yMin = resumen.min - 2;
+    const yMax = resumen.max + 2;
     const y = (t: number) => 104 - ((t - yMin) / (yMax - yMin)) * 98;
     const x = (i: number) => 8 + (i / (cronologico.length - 1)) * 284;
 
     const ultimo = cronologico[cronologico.length - 1];
     return {
       puntos: cronologico.map((p, i) => `${x(i).toFixed(1)},${y(p.temperatura).toFixed(1)}`).join(' '),
-      bandaY: y(RANGO_IDEAL.max).toFixed(1),
-      bandaAlto: (y(RANGO_IDEAL.min) - y(RANGO_IDEAL.max)).toFixed(1),
       ultimoX: x(cronologico.length - 1).toFixed(1),
       ultimoY: y(ultimo.temperatura).toFixed(1),
-      ultimoClave: ultimo.clave,
       desde: cronologico[0].fecha,
       hasta: ultimo.fecha,
     };
@@ -222,10 +172,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
     return finDelDia
       ? new Date(anio, mes - 1, dia, 23, 59, 59, 999)
       : new Date(anio, mes - 1, dia, 0, 0, 0, 0);
-  }
-
-  elegirFiltro(valor: Filtro): void {
-    this.filtro.set(valor);
   }
 
   /** 13 -> "13,0", 13.5 -> "13,5" */

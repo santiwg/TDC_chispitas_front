@@ -48,13 +48,13 @@ export class TermomedService {
   }
 
   /**
-   * GET /currentState
+   * GET /historial/current-state
    * Temperatura actual y color del LED. Se usa en la pantalla de Inicio.
    */
   async obtenerEstadoActual(): Promise<CurrentStateDTO> {
     try {
       const respuesta = await axiosClient.get<CurrentStateDTO>(
-        `${this.baseUrl}/currentState`,
+        `${this.baseUrl}/historial/current-state`,
       );
       return respuesta.data;
     } catch (error) {

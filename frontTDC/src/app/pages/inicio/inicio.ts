@@ -3,7 +3,7 @@
 // Ubicación sugerida: src/app/pages/inicio/inicio.component.ts
 //
 // Pantalla de Inicio: muestra la temperatura actual y el color del LED
-// que devuelve GET /currentState (TermomedService.obtenerEstadoActual).
+// que devuelve GET /historial/current-state (TermomedService.obtenerEstadoActual).
 // Actualiza la lectura periódicamente mientras la pantalla está abierta.
 //
 // Requiere Angular 17+ (standalone, signals y control flow @if/@for).

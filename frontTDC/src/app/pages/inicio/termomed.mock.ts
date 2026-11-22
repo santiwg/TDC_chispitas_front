@@ -18,7 +18,7 @@ const ESTADO_MOCK: 'azul' | 'verde' | 'rojo' = 'azul';
 
 const TEMPERATURA_POR_ESTADO = { azul: 13, verde: 25, rojo: 29.5 };
 
-/** Simula GET /currentState (con una pequeña demora, como una red real). */
+/** Simula la consulta del estado actual con una pequeña demora. */
 export async function mockEstadoActual(): Promise<CurrentStateDTO> {
   await new Promise((r) => setTimeout(r, 600));
   return {

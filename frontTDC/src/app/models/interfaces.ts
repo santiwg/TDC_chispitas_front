@@ -18,7 +18,7 @@ export interface ConfigDTO {
 }
 
 /**
- * Respuesta del GET /currentState.
+ * Respuesta del GET /historial/current-state.
  * Es la lectura actual del sensor, junto con el color que tiene el LED RGB.
  */
 export interface CurrentStateDTO {
