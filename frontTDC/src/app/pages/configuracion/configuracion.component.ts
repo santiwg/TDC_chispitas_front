@@ -149,26 +149,28 @@ export class ConfiguracionComponent {
 
     this.guardando.set(true);
 
-    try {
-      // Armamos el DTO con los valores actuales de los signals
-      const dto: ConfigDTO = {
-        setpoint: this.setpoint(),
-        tolerancia: this.tolerancia(),
-        alertas: this.alertasActivas(),
-      };
+    const dto: ConfigDTO = {
+      setpoint: this.setpoint(),
+      tolerancia: this.tolerancia(),
+      alertas: this.alertasActivas(),
+    };
 
-      let texto = await this.termomed.guardarConfig(dto);
-      try {
-        localStorage.setItem(CLAVE_CONFIGURACION, JSON.stringify(dto));
-      } catch {
-        texto += ' El navegador no pudo guardar una copia local.';
-      }
-      this.mensaje.set({ tipo: 'exito', texto });
+    let avisoLocal = '';
+    try {
+      localStorage.setItem(CLAVE_CONFIGURACION, JSON.stringify(dto));
+    } catch {
+      avisoLocal = ' El navegador no pudo guardar una copia local.';
+    }
+
+    try {
+      const texto = await this.termomed.guardarConfig(dto);
+      this.mensaje.set({ tipo: 'exito', texto: texto + avisoLocal });
     } catch (error) {
       // El service ya lanza errores con mensaje legible para el usuario
       const texto =
         error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
-      this.mensaje.set({ tipo: 'error', texto });
+      const detalleLocal = avisoLocal || ' La configuración quedó guardada en este navegador.';
+      this.mensaje.set({ tipo: 'error', texto: texto + detalleLocal });
     } finally {
       // finally se ejecuta siempre (haya error o no): reactivamos el botón
       this.guardando.set(false);
