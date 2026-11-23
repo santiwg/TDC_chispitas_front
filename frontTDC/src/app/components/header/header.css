@@ -1,0 +1,40 @@
+/* =====================================================================
+   header.css
+   Usa las variables de styles.css (--color-primario, --color-superficie).
+   ===================================================================== */
+
+:host {
+  display: block;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 20px;
+  background: var(--color-primario);
+  color: var(--color-superficie);
+}
+
+.header__logo {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--color-superficie);
+  color: var(--color-primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__nombre {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.header__nombre span {
+  font-weight: 500;
+}

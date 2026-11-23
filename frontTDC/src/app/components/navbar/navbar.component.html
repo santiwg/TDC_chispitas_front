@@ -1,0 +1,35 @@
+<!-- Barra inferior. El orden de las pestañas es igual al del prototipo. -->
+<nav class="navbar" aria-label="Navegación principal">
+  <!-- Configuración -->
+  <a class="item" routerLink="/configuracion" routerLinkActive="activo">
+    <!-- Ícono de sliders (inline para poder pintarlo con currentColor) -->
+    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 6h8M16 6h4" />
+      <circle cx="14" cy="6" r="2" />
+      <path d="M4 12h2M10 12h10" />
+      <circle cx="8" cy="12" r="2" />
+      <path d="M4 18h10M18 18h2" />
+      <circle cx="16" cy="18" r="2" />
+    </svg>
+    <span class="texto">Configuración</span>
+  </a>
+
+  <!-- Inicio -->
+  <a class="item" routerLink="/inicio" routerLinkActive="activo">
+    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 11l8-7 8 7" />
+      <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9" />
+    </svg>
+    <span class="texto">Inicio</span>
+  </a>
+
+  <!-- Historial -->
+  <a class="item" routerLink="/historial" routerLinkActive="activo">
+    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1" />
+      <path d="M3 4v4h4" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+    <span class="texto">Historial</span>
+  </a>
+</nav>
