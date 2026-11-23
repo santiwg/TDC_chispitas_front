@@ -7,14 +7,14 @@
 // =====================================================================
 
 /**
- * Body del POST /config.
+ * Body del POST /configuracion.
  * Es lo que le mandamos al backend (y este al Arduino) cuando
  * el usuario toca "Guardar y enviar al dispositivo".
  */
 export interface ConfigDTO {
   setpoint: number; // temperatura objetivo en °C
-  tolerance: number; // margen permitido (±) en °C
-  enviarNotificaciones: boolean; // true = avisar cuando salga del rango
+  tolerancia: number; // margen permitido (±) en °C
+  alertas: boolean; // true = avisar cuando salga del rango
 }
 
 /**
