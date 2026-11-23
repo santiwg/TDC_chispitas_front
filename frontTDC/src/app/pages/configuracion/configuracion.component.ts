@@ -148,9 +148,8 @@ export class ConfiguracionComponent {
         alertas: this.alertasActivas(),
       };
 
-      // La API responde con un string de éxito, que mostramos tal cual
-      const respuesta = await this.termomed.guardarConfig(dto);
-      this.mensaje.set({ tipo: 'exito', texto: respuesta });
+      const texto = await this.termomed.guardarConfig(dto);
+      this.mensaje.set({ tipo: 'exito', texto });
     } catch (error) {
       // El service ya lanza errores con mensaje legible para el usuario
       const texto =

@@ -12,7 +12,7 @@
   <!-- ================= Filtro por fechas (siempre visible) ================= -->
   <section class="tarjeta" aria-labelledby="titulo-fechas">
     <div class="fechas__cabecera">
-      <h2 id="titulo-fechas">Filtrar por fecha</h2>
+      <h2 id="titulo-fechas">Filtrar por fecha y hora</h2>
       @if (hayRango()) {
         <button type="button" class="fechas__limpiar" (click)="limpiarFechas()">Limpiar</button>
       }
@@ -22,25 +22,25 @@
       <label class="campo">
         <span>Desde</span>
         <input
-          type="date"
+          type="datetime-local"
           [value]="desde()"
-          [max]="hasta() || null"
+          [attr.max]="hasta() || null"
           (change)="cambiarDesde($any($event.target).value)"
         />
       </label>
       <label class="campo">
         <span>Hasta</span>
         <input
-          type="date"
+          type="datetime-local"
           [value]="hasta()"
-          [min]="desde() || null"
+          [attr.min]="desde() || null"
           (change)="cambiarHasta($any($event.target).value)"
         />
       </label>
     </div>
 
     @if (rangoInvalido()) {
-      <p class="fechas__error" role="alert">La fecha "Desde" no puede ser posterior a "Hasta".</p>
+      <p class="fechas__error" role="alert">La fecha y hora de «Desde» no pueden ser posteriores a «Hasta».</p>
     }
   </section>
 
