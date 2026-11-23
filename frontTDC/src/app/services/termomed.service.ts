@@ -30,16 +30,12 @@ export class TermomedService {
   /**
    * POST /configuracion
    * Envía setpoint, tolerancia y si se quieren notificaciones.
-   * La API responde con un string de éxito, que devolvemos tal cual
-   * para mostrárselo al usuario.
+   * Devuelve un mensaje para la pantalla cuando el guardado se completa.
    */
   async guardarConfig(dto: ConfigDTO): Promise<string> {
     try {
-      const respuesta = await axiosClient.post<string>(
-        `${this.baseUrl}/configuracion`,
-        dto,
-      );
-      return respuesta.data;
+      await axiosClient.post(`${this.baseUrl}/configuracion`, dto);
+      return 'Configuración guardada correctamente.';
     } catch (error) {
       throw new Error(
         this.obtenerMensajeError(error, 'No se pudo guardar la configuración.'),

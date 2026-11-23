@@ -46,14 +46,19 @@ export class HistorialComponent implements OnInit, OnDestroy {
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
 
-  /** Fechas elegidas, en el formato de <input type="date">: "2026-11-01" o "" si no hay. */
+  /** Fecha y hora local elegidas, en el formato de <input type="datetime-local">. */
   readonly desde = signal('');
   readonly hasta = signal('');
 
+  private readonly fechaDesde = computed(() => this.desde() ? new Date(this.desde()) : null);
+  private readonly fechaHasta = computed(() => this.hasta() ? new Date(this.hasta()) : null);
+
   readonly hayRango = computed(() => !!this.desde() || !!this.hasta());
-  readonly rangoInvalido = computed(
-    () => !!this.desde() && !!this.hasta() && this.desde() > this.hasta(),
-  );
+  readonly rangoInvalido = computed(() => {
+    const desde = this.fechaDesde();
+    const hasta = this.fechaHasta();
+    return desde !== null && hasta !== null && desde > hasta;
+  });
 
   /** Se incrementa en cada pedido, para ignorar respuestas viejas si el usuario cambia rápido. */
   private turno = 0;
@@ -126,9 +131,8 @@ export class HistorialComponent implements OnInit, OnDestroy {
     this.consultaEnCurso = true;
     if (!enSegundoPlano) this.cargando.set(true);
     try {
-      // "Desde" arranca a las 00:00 y "Hasta" llega hasta las 23:59 de ese día
-      const desde = this.aFecha(this.desde(), false);
-      const hasta = this.aFecha(this.hasta(), true);
+      const desde = this.fechaDesde();
+      const hasta = this.fechaHasta();
 
       const dto = USAR_MOCK
         ? await mockHistorial(desde, hasta)
@@ -163,15 +167,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
     this.desde.set('');
     this.hasta.set('');
     this.cargar();
-  }
-
-  /** "2026-11-01" -> Date en hora local (inicio o fin del día). "" -> null. */
-  private aFecha(valor: string, finDelDia: boolean): Date | null {
-    if (!valor) return null;
-    const [anio, mes, dia] = valor.split('-').map(Number);
-    return finDelDia
-      ? new Date(anio, mes - 1, dia, 23, 59, 59, 999)
-      : new Date(anio, mes - 1, dia, 0, 0, 0, 0);
   }
 
   /** 13 -> "13,0", 13.5 -> "13,5" */
