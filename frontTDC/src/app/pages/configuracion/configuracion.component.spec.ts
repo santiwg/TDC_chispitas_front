@@ -21,7 +21,7 @@ describe('ConfiguracionComponent', () => {
           useValue: {
             guardarConfig,
             obtenerEstadoActual: async () => ({
-              temperature: 25,
+              temperatura: 25,
               color: 'verde',
               velocityRmp: 0,
               velocityPercent: 0,

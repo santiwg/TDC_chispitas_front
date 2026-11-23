@@ -22,10 +22,10 @@ export interface ConfigDTO {
  * Es la lectura actual del sensor, junto con el color que tiene el LED RGB.
  */
 export interface CurrentStateDTO {
-  temperature: number;
-  color: string; // por ejemplo 'azul' | 'verde' | 'rojo'
-  velocityRmp:number; // velocidad del ventilador en RPM
-  velocityPercent:number; // velocidad del ventilador en porcentaje
+  temperatura: number;
+  color: string; // por ejemplo '#2878FF' o 'azul'
+  velocityRmp: number; // velocidad del ventilador en RPM
+  velocityPercent: number; // velocidad del ventilador en porcentaje
 }
 
 /**

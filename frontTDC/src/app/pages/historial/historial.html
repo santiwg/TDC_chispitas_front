@@ -64,15 +64,22 @@
       </div>
 
       @if (grafico(); as g) {
-        <svg class="grafico" viewBox="0 0 300 110" role="img" aria-label="Gráfico de la temperatura en las mediciones del período">
-          <line x1="0" y1="109" x2="300" y2="109" class="grafico__base" />
+        <svg class="grafico" viewBox="0 0 320 152" role="img" aria-label="Temperatura en grados Celsius a lo largo del tiempo">
+          <text class="grafico__unidad" x="34" y="12" text-anchor="end">°C</text>
+          @for (marca of g.marcas; track marca.temperatura) {
+            <line x1="42" x2="310" [attr.y1]="marca.y" [attr.y2]="marca.y" class="grafico__guia" />
+            <text class="grafico__marca" x="34" [attr.y]="marca.y" text-anchor="end" dominant-baseline="middle">{{ marca.temperatura }}</text>
+          }
+          <line x1="42" x2="42" y1="24" y2="124" class="grafico__guia" />
           <polyline class="grafico__linea" [attr.points]="g.puntos" />
-          <circle r="6" [attr.cx]="g.ultimoX" [attr.cy]="g.ultimoY" class="grafico__ultimo" />
+          <circle r="4" [attr.cx]="g.ultimoX" [attr.cy]="g.ultimoY" class="grafico__ultimo" />
+          @if (g.tieneDuracion) {
+            <text class="grafico__fecha" x="42" y="146">{{ g.desde | date: 'dd/MM · HH:mm' : zonaHoraria }}</text>
+            <text class="grafico__fecha" x="310" y="146" text-anchor="end">{{ g.hasta | date: 'dd/MM · HH:mm' : zonaHoraria }}</text>
+          } @else {
+            <text class="grafico__fecha" x="176" y="146" text-anchor="middle">{{ g.desde | date: 'dd/MM · HH:mm' : zonaHoraria }}</text>
+          }
         </svg>
-        <div class="grafico__fechas">
-          <span>{{ g.desde | date: 'dd/MM · HH:mm' }}</span>
-          <span>{{ g.hasta | date: 'dd/MM · HH:mm' }}</span>
-        </div>
       }
 
       <dl class="resumen">
@@ -96,8 +103,8 @@
       @for (f of filas(); track f.fecha.getTime()) {
         <li class="fila">
           <div class="fila__momento">
-            <strong>{{ f.fecha | date: 'HH:mm' }} hs</strong>
-            <span>{{ f.fecha | date: 'dd/MM/yyyy' }}</span>
+            <strong>{{ f.fecha | date: 'HH:mm' : zonaHoraria }} hs</strong>
+            <span>{{ f.fecha | date: 'dd/MM/yyyy' : zonaHoraria }}</span>
           </div>
           <span class="fila__temperatura">{{ formatear(f.temperatura) }} °C</span>
         </li>

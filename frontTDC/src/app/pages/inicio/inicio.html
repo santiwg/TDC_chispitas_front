@@ -83,8 +83,12 @@
       </dl>
     </section>
   } @else if (cargando()) {
-    <section class="tarjeta tarjeta--cargando" aria-busy="true">
+    <section class="tarjeta tarjeta--mensaje" aria-busy="true">
       <p>Obteniendo la temperatura…</p>
+    </section>
+  } @else if (!error()) {
+    <section class="tarjeta tarjeta--mensaje">
+      <p>Todavía no hay mediciones registradas.</p>
     </section>
   }
 </main>

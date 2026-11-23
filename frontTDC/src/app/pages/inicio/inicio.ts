@@ -60,11 +60,20 @@ const TEXTOS: Record<
   },
 };
 
-/** Convierte el color que manda la API (ej. "verde", "GREEN") a una clave conocida. */
+/** Los colores hexadecimales del LED se clasifican por el canal predominante. */
 function normalizarColor(color: string): ClaveEstado {
   const c = (color ?? '').toString().trim().toLowerCase();
   if (c === 'azul' || c === 'blue') return 'azul';
   if (c === 'rojo' || c === 'red') return 'rojo';
+
+  const hex = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(c);
+  if (hex) {
+    const rojo = Number.parseInt(hex[1], 16);
+    const verde = Number.parseInt(hex[2], 16);
+    const azul = Number.parseInt(hex[3], 16);
+    if (azul > rojo && azul > verde) return 'azul';
+    if (rojo > verde && rojo > azul) return 'rojo';
+  }
   return 'verde';
 }
 
@@ -73,7 +82,7 @@ function armarVista(dto: CurrentStateDTO): EstadoVista {
   const clave = normalizarColor(dto.color);
   return {
     clave,
-    temperatura: dto.temperature,
+    temperatura: dto.temperatura,
     velocidadRpm: dto.velocityRmp,
     velocidadPorcentaje: dto.velocityPercent,
     fecha: new Date(), // momento de la consulta (el DTO no trae fecha)
@@ -121,7 +130,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.consultaEnCurso = true;
     try {
       const dto = USAR_MOCK ? await mockEstadoActual() : await this.termomed.obtenerEstadoActual();
-      this.estado.set(armarVista(dto));
+      this.estado.set(dto ? armarVista(dto) : null);
       this.error.set(null);
     } catch (e) {
       // El service ya devuelve un mensaje legible

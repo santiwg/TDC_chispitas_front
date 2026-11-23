@@ -60,12 +60,23 @@
 .grafico {
   display: block;
   width: 100%;
-  height: 110px;
-  margin-top: 10px;
+  max-width: 560px;
+  height: auto;
+  margin: 10px auto 0;
 }
-.grafico__base {
+.grafico__guia {
   stroke: var(--color-borde);
   stroke-width: 1;
+}
+.grafico__marca,
+.grafico__fecha,
+.grafico__unidad {
+  fill: var(--color-texto-suave);
+  font-size: 12px;
+}
+.grafico__fecha,
+.grafico__unidad {
+  font-weight: 600;
 }
 .grafico__linea {
   fill: none;
@@ -77,15 +88,7 @@
 .grafico__ultimo {
   fill: var(--color-superficie);
   stroke: var(--color-primario);
-  stroke-width: 3.5;
-}
-.grafico__fechas {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-texto-suave);
+  stroke-width: 2.5;
 }
 
 /* ---------- Mínima / promedio / máxima ---------- */

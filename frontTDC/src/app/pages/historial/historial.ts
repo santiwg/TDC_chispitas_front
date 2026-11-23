@@ -46,12 +46,17 @@ export class HistorialComponent implements OnInit, OnDestroy {
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
 
-  /** Fecha y hora local elegidas, en el formato de <input type="datetime-local">. */
+  /** Fecha y hora argentina elegidas, en el formato de <input type="datetime-local">. */
   readonly desde = signal('');
   readonly hasta = signal('');
+  readonly zonaHoraria = '-03:00';
 
-  private readonly fechaDesde = computed(() => this.desde() ? new Date(this.desde()) : null);
-  private readonly fechaHasta = computed(() => this.hasta() ? new Date(this.hasta()) : null);
+  private readonly fechaDesde = computed(() =>
+    this.desde() ? new Date(this.desde() + this.zonaHoraria) : null,
+  );
+  private readonly fechaHasta = computed(() =>
+    this.hasta() ? new Date(this.hasta() + this.zonaHoraria) : null,
+  );
 
   readonly hayRango = computed(() => !!this.desde() || !!this.hasta());
   readonly rangoInvalido = computed(() => {
@@ -65,12 +70,15 @@ export class HistorialComponent implements OnInit, OnDestroy {
 
   // ---------- Datos derivados ----------
 
-  /** Todas las mediciones, de la más reciente a la más antigua. */
+  /** Aplica el rango incluso si el backend devuelve todas las mediciones. */
   readonly filas = computed<Fila[]>(() => {
     const d = this.datos();
     if (!d) return [];
+    const desde = this.fechaDesde();
+    const hasta = this.fechaHasta();
     return d.historial
       .map((p) => ({ fecha: new Date(p.fechaHora), temperatura: p.temperatura }))
+      .filter(({ fecha }) => (!desde || fecha >= desde) && (!hasta || fecha <= hasta))
       .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
   });
 
@@ -85,24 +93,36 @@ export class HistorialComponent implements OnInit, OnDestroy {
     };
   });
 
-  /** Datos ya calculados para dibujar el SVG (viewBox 300 x 110). */
+  /** Coordenadas y marcas de los ejes del gráfico. */
   readonly grafico = computed(() => {
     const resumen = this.resumen();
     if (!resumen || resumen.cantidad < 2) return null;
 
     const cronologico = [...this.filas()].reverse(); // de la más antigua a la más reciente
-    const yMin = resumen.min - 2;
-    const yMax = resumen.max + 2;
-    const y = (t: number) => 104 - ((t - yMin) / (yMax - yMin)) * 98;
-    const x = (i: number) => 8 + (i / (cronologico.length - 1)) * 284;
-
     const ultimo = cronologico[cronologico.length - 1];
+    const desde = cronologico[0].fecha;
+    const hasta = ultimo.fecha;
+    const duracion = hasta.getTime() - desde.getTime();
+    const x = (fecha: Date) =>
+      duracion > 0 ? 42 + ((fecha.getTime() - desde.getTime()) / duracion) * 268 : 176;
+
+    const paso = Math.max(1, Math.ceil((resumen.max - resumen.min + 2) / 4));
+    const minimo = Math.floor((resumen.min - 1) / paso) * paso;
+    const maximo = Math.ceil((resumen.max + 1) / paso) * paso;
+    const y = (temperatura: number) => 124 - ((temperatura - minimo) / (maximo - minimo)) * 100;
+    const marcas = Array.from({ length: (maximo - minimo) / paso + 1 }, (_, indice) => {
+      const temperatura = maximo - indice * paso;
+      return { temperatura, y: y(temperatura) };
+    });
+
     return {
-      puntos: cronologico.map((p, i) => `${x(i).toFixed(1)},${y(p.temperatura).toFixed(1)}`).join(' '),
-      ultimoX: x(cronologico.length - 1).toFixed(1),
+      marcas,
+      puntos: cronologico.map((p) => `${x(p.fecha).toFixed(1)},${y(p.temperatura).toFixed(1)}`).join(' '),
+      ultimoX: x(hasta).toFixed(1),
       ultimoY: y(ultimo.temperatura).toFixed(1),
-      desde: cronologico[0].fecha,
-      hasta: ultimo.fecha,
+      desde,
+      hasta,
+      tieneDuracion: duracion > 0,
     };
   });
 
@@ -131,12 +151,9 @@ export class HistorialComponent implements OnInit, OnDestroy {
     this.consultaEnCurso = true;
     if (!enSegundoPlano) this.cargando.set(true);
     try {
-      const desde = this.fechaDesde();
-      const hasta = this.fechaHasta();
-
       const dto = USAR_MOCK
-        ? await mockHistorial(desde, hasta)
-        : await this.termomed.obtenerHistorial(desde, hasta);
+        ? await mockHistorial(this.fechaDesde(), this.fechaHasta())
+        : await this.termomed.obtenerHistorial(this.desde(), this.hasta());
 
       if (turno !== this.turno) return; // llegó una respuesta vieja: se descarta
       this.datos.set(dto);

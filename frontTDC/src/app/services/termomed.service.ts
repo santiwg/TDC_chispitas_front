@@ -47,12 +47,12 @@ export class TermomedService {
    * GET /historial/current-state
    * Temperatura actual y color del LED. Se usa en la pantalla de Inicio.
    */
-  async obtenerEstadoActual(): Promise<CurrentStateDTO> {
+  async obtenerEstadoActual(): Promise<CurrentStateDTO | null> {
     try {
-      const respuesta = await axiosClient.get<CurrentStateDTO>(
+      const respuesta = await axiosClient.get<CurrentStateDTO | null | ''>(
         `${this.baseUrl}/historial/current-state`,
       );
-      return respuesta.data;
+      return respuesta.data || null;
     } catch (error) {
       throw new Error(
         this.obtenerMensajeError(error, 'No se pudo obtener el estado actual.'),
@@ -62,20 +62,16 @@ export class TermomedService {
 
   /**
    * GET /historial
-   * Historial de temperaturas. El rango de fechas es opcional.
-   * ASUMO que la API recibe fechaDesde/fechaHasta como query params
-   * (la definición no lo aclara). Si el backend los espera de otra forma,
-   * se cambia solo acá.
+   * El backend interpreta los límites sin zona horaria como hora argentina.
    */
   async obtenerHistorial(
-    fechaDesde?: Date | null,
-    fechaHasta?: Date | null,
+    fechaDesde?: string,
+    fechaHasta?: string,
   ): Promise<HistorialCompletoDTO> {
     try {
-      // Solo mandamos los params que realmente tienen valor
       const params: Record<string, string> = {};
-      if (fechaDesde) params['fechaDesde'] = fechaDesde.toISOString();
-      if (fechaHasta) params['fechaHasta'] = fechaHasta.toISOString();
+      if (fechaDesde) params['fechaDesde'] = fechaDesde;
+      if (fechaHasta) params['fechaHasta'] = fechaHasta;
 
       const respuesta = await axiosClient.get<HistorialCompletoDTO>(
         `${this.baseUrl}/historial`,

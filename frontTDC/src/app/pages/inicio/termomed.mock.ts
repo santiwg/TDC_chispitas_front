@@ -22,7 +22,7 @@ const TEMPERATURA_POR_ESTADO = { azul: 13, verde: 25, rojo: 29.5 };
 export async function mockEstadoActual(): Promise<CurrentStateDTO> {
   await new Promise((r) => setTimeout(r, 600));
   return {
-    temperature: TEMPERATURA_POR_ESTADO[ESTADO_MOCK],
+    temperatura: TEMPERATURA_POR_ESTADO[ESTADO_MOCK],
     color: ESTADO_MOCK,
     velocityRmp: 1800,
     velocityPercent: 60,
