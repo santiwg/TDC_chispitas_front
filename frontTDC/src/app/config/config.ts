@@ -8,16 +8,14 @@
 // si algún día cambia la forma de leer el entorno, se toca un solo archivo.
 //
 // Cómo funciona:
-// Angular no trae soporte de .env por defecto. Usamos el paquete
-// @ngx-env/builder, que lee el archivo .env y expone las variables
-// que empiezan con NG_APP_ en import.meta.env.
-// (Los pasos de instalación están en el mensaje de entrega.)
+// npm run build lee NG_APP_API_URL del entorno e incorpora su valor
+// en import.meta.env durante la compilación.
 // =====================================================================
 
 const env = import.meta.env;
 
 // Valor por defecto para desarrollo local, por si falta el .env
-const URL_POR_DEFECTO = 'http://localhost:3000';//SACAR ESTO
+const URL_POR_DEFECTO = 'http://localhost:3000';
 
 /** Saca las barras del final para evitar URLs con doble barra ("//config"). */
 const limpiarUrl = (url: string): string => url.replace(/\/+$/, '');
@@ -25,7 +23,7 @@ const limpiarUrl = (url: string): string => url.replace(/\/+$/, '');
 // Si falta la variable avisamos por consola para detectarlo rápido
 if (!env?.NG_APP_API_URL) {
   console.warn(
-    `[config] Falta NG_APP_API_URL en el .env, se usa ${URL_POR_DEFECTO}`,
+    `[config] Falta NG_APP_API_URL en la compilación, se usa ${URL_POR_DEFECTO}`,
   );
 }
 
