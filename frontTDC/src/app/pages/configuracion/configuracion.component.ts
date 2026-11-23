@@ -144,8 +144,8 @@ export class ConfiguracionComponent {
       // Armamos el DTO con los valores actuales de los signals
       const dto: ConfigDTO = {
         setpoint: this.setpoint(),
-        tolerance: this.tolerancia(),
-        enviarNotificaciones: this.alertasActivas(),
+        tolerancia: this.tolerancia(),
+        alertas: this.alertasActivas(),
       };
 
       // La API responde con un string de éxito, que mostramos tal cual
