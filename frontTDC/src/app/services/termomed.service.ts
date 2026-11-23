@@ -28,7 +28,7 @@ export class TermomedService {
   private readonly baseUrl = config.urls.api;
 
   /**
-   * POST /config
+   * POST /configuracion
    * Envía setpoint, tolerancia y si se quieren notificaciones.
    * La API responde con un string de éxito, que devolvemos tal cual
    * para mostrárselo al usuario.
@@ -36,7 +36,7 @@ export class TermomedService {
   async guardarConfig(dto: ConfigDTO): Promise<string> {
     try {
       const respuesta = await axiosClient.post<string>(
-        `${this.baseUrl}/config`,
+        `${this.baseUrl}/configuracion`,
         dto,
       );
       return respuesta.data;

@@ -7,7 +7,7 @@
 // =====================================================================
 
 /**
- * Body del POST /config.
+ * Body del POST /configuracion.
  * Es lo que le mandamos al backend (y este al Arduino) cuando
  * el usuario toca "Guardar y enviar al dispositivo".
  */
