@@ -15,11 +15,13 @@
 // El HTML lee los signals y se actualiza solo, sin código extra.
 // =====================================================================
 
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, type WritableSignal } from '@angular/core';
 
 import { TermomedService } from '../../services/termomed.service';
 import { ConfigDTO } from '../../models/interfaces';
 import { HeaderComponent } from '../../components/header/header';
+
+const CLAVE_CONFIGURACION = 'termomed.configuracion';
 
 // Forma del mensaje que se muestra debajo del botón (éxito o error)
 interface MensajeEstado {
@@ -52,11 +54,11 @@ export class ConfiguracionComponent {
   private readonly TOLERANCIA_PASO = 0.5;
 
   // ---------------------------------------------------------------
-  // Estado de la pantalla (valores iniciales = los del prototipo)
+  // Estado de la pantalla
   // ---------------------------------------------------------------
-  readonly setpoint = signal(25);
-  readonly tolerancia = signal(1);
-  readonly alertasActivas = signal(true);
+  readonly setpoint: WritableSignal<number>;
+  readonly tolerancia: WritableSignal<number>;
+  readonly alertasActivas: WritableSignal<boolean>;
 
   // true mientras se espera la respuesta de la API (deshabilita el botón)
   readonly guardando = signal(false);
@@ -79,6 +81,13 @@ export class ConfiguracionComponent {
   // Textos de la tarjeta "Colores del LED RGB"
   readonly textoAzul = computed(() => `< ${this.formatear(this.rangoMin())} °C`);
   readonly textoRojo = computed(() => `> ${this.formatear(this.rangoMax())} °C`);
+
+  constructor() {
+    const guardada = this.cargarConfig();
+    this.setpoint = signal(guardada?.setpoint ?? 25);
+    this.tolerancia = signal(guardada?.tolerancia ?? 1);
+    this.alertasActivas = signal(guardada?.alertas ?? true);
+  }
 
   // ---------------------------------------------------------------
   // Botones + y -
@@ -148,7 +157,12 @@ export class ConfiguracionComponent {
         alertas: this.alertasActivas(),
       };
 
-      const texto = await this.termomed.guardarConfig(dto);
+      let texto = await this.termomed.guardarConfig(dto);
+      try {
+        localStorage.setItem(CLAVE_CONFIGURACION, JSON.stringify(dto));
+      } catch {
+        texto += ' El navegador no pudo guardar una copia local.';
+      }
       this.mensaje.set({ tipo: 'exito', texto });
     } catch (error) {
       // El service ya lanza errores con mensaje legible para el usuario
@@ -164,6 +178,30 @@ export class ConfiguracionComponent {
   // ---------------------------------------------------------------
   // Utilidades privadas
   // ---------------------------------------------------------------
+
+  private cargarConfig(): ConfigDTO | null {
+    try {
+      const datos = localStorage.getItem(CLAVE_CONFIGURACION);
+      if (datos === null) return null;
+
+      const guardada: Partial<ConfigDTO> | null = JSON.parse(datos);
+      const { setpoint, tolerancia, alertas } = guardada ?? {};
+      if (
+        typeof setpoint === 'number' &&
+        setpoint >= this.SETPOINT_MIN &&
+        setpoint <= this.SETPOINT_MAX &&
+        typeof tolerancia === 'number' &&
+        tolerancia >= this.TOLERANCIA_MIN &&
+        tolerancia <= this.TOLERANCIA_MAX &&
+        typeof alertas === 'boolean'
+      ) {
+        return { setpoint, tolerancia, alertas };
+      }
+    } catch {
+      // El navegador puede bloquear el almacenamiento o la copia puede estar dañada.
+    }
+    return null;
+  }
 
   /** Mantiene un número dentro de [min, max]. */
   private limitar(valor: number, min: number, max: number): number {
